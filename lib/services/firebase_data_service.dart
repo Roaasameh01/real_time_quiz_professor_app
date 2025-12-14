@@ -307,7 +307,7 @@ class FirebaseDataService {
       await deleteQuiz(quiz.id);
     }
 
-    if (imagePath != null && imagePath.contains('firebase')) {
+    if (imagePath.isNotEmpty && imagePath.contains('firebase')) {
       try {
         await _storage.refFromURL(imagePath).delete();
       } catch (e) {

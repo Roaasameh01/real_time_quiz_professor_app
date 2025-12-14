@@ -28,7 +28,6 @@ class CourseDetailsScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // الهيدر بظل خفيف ومسافات أجمل
             Container(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
               decoration: BoxDecoration(
@@ -73,7 +72,6 @@ class CourseDetailsScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // رسالة "No quizzes yet" أجمل شوية
             Expanded(
               child: BlocBuilder<QuizCubit, QuizState>(
                 builder: (context, quizState) {
@@ -158,7 +156,6 @@ class CourseDetailsScreen extends StatelessWidget {
         ),
       ),
 
-      // FAB أجمل شوية مع ظل وشكل مدور
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: mainGreen,
         elevation: 8,
@@ -275,59 +272,65 @@ class CourseDetailsScreen extends StatelessWidget {
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text("Cancel",
-                  style: TextStyle(color: Colors.red, fontSize: 16)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: beigeLight,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                elevation: 0,
-              ),
-              onPressed: () async {
-                final title = titleController.text.trim();
-                if (title.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("Please enter a quiz title"),
-                        backgroundColor: Colors.red),
-                  );
-                  return;
-                }
+        actions: [
+  ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: beigeLight,
+      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      elevation: 0,
+    ),
+    onPressed: () async {
+      final title = titleController.text.trim();
+      if (title.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Please enter a quiz title"),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-                final newQuiz = Quiz(
-                  id: const Uuid().v4(),
-                  courseId: course.id,
-                  title: title,
-                  date: DateTime.now(),
-                  duration: Duration(minutes: durationMinutes),
-                  questions: [],
-                  showFinalScore: showFinalScore,
-                );
+      final newQuiz = Quiz(
+        id: const Uuid().v4(),
+        courseId: course.id,
+        title: title,
+        date: DateTime.now(),
+        duration: Duration(minutes: durationMinutes),
+        questions: [],
+        showFinalScore: showFinalScore,
+      );
 
-                await context.read<QuizCubit>().addQuiz(newQuiz);
-                Navigator.pop(ctx);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => AddQuestionsScreen(quiz: newQuiz)),
-                );
-              },
-              child: const Text(
-                "Create & Start",
-                style: TextStyle(
-                    color: mainGreen,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-              ),
-            ),
-          ],
+      await context.read<QuizCubit>().addQuiz(newQuiz);
+      Navigator.pop(ctx);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AddQuestionsScreen(quiz: newQuiz),
+        ),
+      );
+    },
+    child: const Text(
+      "Create & Start",
+      style: TextStyle(
+        color: mainGreen,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
+    ),
+  ),
+
+  TextButton(
+    onPressed: () => Navigator.pop(ctx),
+    child: const Text(
+      "Cancel",
+      style: TextStyle(color: Colors.red, fontSize: 16),
+    ),
+  ),
+],
         ),
       ),
     );

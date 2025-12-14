@@ -11,7 +11,8 @@ import '../screens/course_details_screen.dart';
 import '../screens/dashboard_screen.dart';
 import '../screens/notifications_screen.dart';
 
-class ProfessorHome extends StatelessWidget {
+class ProfessorHome extends StatefulWidget {
+  
   const ProfessorHome({super.key});
 
   static const Color mainGreen = Color(0xFF0D4726);
@@ -20,50 +21,161 @@ class ProfessorHome extends StatelessWidget {
   static const Color tileFill = Color(0xFFF2E6D1);
 
   @override
+  State<ProfessorHome> createState() => _ProfessorHomeState();
+}
+
+class _ProfessorHomeState extends State<ProfessorHome> {
+  // --- Animation Variables ---
+  final String _titleText = 'QuizByte';
+  late List<bool> _titleVisibility;
+
+  bool _titleGroupVisible = true;
+  bool _contentVisible = false;
+
+  // --- Timing Constants ---
+  static const int _letterDelayMs = 150;
+  static const int _titleHoldDelayMs = 800;
+  static const int _titleFadeOutDurationMs = 500;
+  static const int _contentFadeInDurationMs = 700;
+
+  static const Color mainGreen = Color(0xFF0D4726);
+  static const Color beigeLight = Color(0xFFFDF6EE);
+  static const Color beigeDark = Color(0xFFF3DEC4);
+  static const Color tileFill = Color(0xFFF2E6D1);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _titleVisibility = List.filled(_titleText.length, false);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startAnimationSequence();
+    });
+  }
+
+  void _startAnimationSequence() {
+    final totalLetterAppearanceTime = _letterDelayMs * _titleText.length;
+
+    for (int i = 0; i < _titleText.length; i++) {
+      Future.delayed(Duration(milliseconds: _letterDelayMs * i), () {
+        if (mounted) {
+          setState(() {
+            _titleVisibility[i] = true;
+          });
+        }
+      });
+    }
+
+    final fadeOutStartTime = totalLetterAppearanceTime + _titleHoldDelayMs;
+    Future.delayed(Duration(milliseconds: fadeOutStartTime), () {
+      if (mounted) {
+        setState(() {
+          _titleGroupVisible = false;
+        });
+      }
+    });
+
+    final contentInStartTime = fadeOutStartTime + _titleFadeOutDurationMs;
+    Future.delayed(Duration(milliseconds: contentInStartTime), () {
+      if (mounted) {
+        setState(() {
+          _contentVisible = true;
+        });
+      }
+    });
+  }
+
+  Widget _buildAnimatedLetter(int index) {
+    return AnimatedOpacity(
+      opacity: _titleVisibility[index] ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 300),
+      child: Text(
+        _titleText[index],
+        style: const TextStyle(
+          color: mainGreen,
+          fontSize: 60,
+          fontWeight: FontWeight.bold,
+          height: 1.0,
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [beigeLight, beigeDark],
-          ),
+          color: beigeLight,
         ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(28, 36, 28, 20),
+        child: Stack(
+          children: [
+            // Animated Title (appears first, then fades out)
+            AnimatedOpacity(
+              opacity: _titleGroupVisible ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: _titleFadeOutDurationMs),
+              child: Center(
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    _titleText.length,
+                    (index) => _buildAnimatedLetter(index),
+                  ),
+                ),
+              ),
+            ),
+
+            // Main Content (fades in after animation)
+            AnimatedOpacity(
+              opacity: _contentVisible ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: _contentFadeInDurationMs),
+              child: SafeArea(
+                child: Column(
                   children: [
-                    Container(
-                      width: 70,
-                      height: 70,
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                          color: Colors.white, shape: BoxShape.circle),
-                      child: ClipOval(
-                        child: Image.asset('assets/images/innovation.png',
-                            fit: BoxFit.contain),
-                      ),
-                    ),
-                    const SizedBox(width: 18),
-                    Expanded(
-                      child: Column(
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 36, 28, 20),
+                      child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Welcome Professor',
-                              style: TextStyle(
-                                  color: mainGreen,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold)),
+                          Container(
+                            width: 70,
+                            height: 70,
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/images/innovation.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 18),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Welcome Professor',
+                                  style: TextStyle(
+                                    color: mainGreen,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(height: 6),
-                          const Text('Manage quizzes & monitor students.',
-                              style: TextStyle(
-                                  fontSize: 15, color: Color(0xCC0D4726))),
+                          const Text(
+                            'Manage quizzes & monitor students.',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Color(0xCC0D4726),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -93,10 +205,6 @@ class ProfessorHome extends StatelessWidget {
                                 color: Colors.red,
                                 shape: BoxShape.circle,
                               ),
-                              constraints: const BoxConstraints(
-                                minWidth: 12,
-                                minHeight: 12,
-                              ),
                             ),
                           ),
                         ],
@@ -117,11 +225,14 @@ class ProfessorHome extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 28),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text('Courses',
-                      style: TextStyle(
-                          color: mainGreen,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700)),
+                  child: Text(
+                    'Courses',
+                    style: TextStyle(
+                      color: mainGreen,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -214,15 +325,19 @@ class ProfessorHome extends StatelessWidget {
                             onLongPress: () =>
                                 _showDeleteDialog(context, course),
                           );
-                        },
-                      ),
-                    );
+                  },
+                ),
+              );
                   },
                 ),
               ),
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
+
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: mainGreen,

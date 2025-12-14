@@ -8,10 +8,15 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Read flutter properties from gradle.properties safely
+val flutterVersionCode: Int? = project.findProperty("flutter.versionCode")?.toString()?.toIntOrNull()
+val flutterVersionName: String? = project.findProperty("flutter.versionName")?.toString()
+
 android {
     namespace = "com.example.flutter_application_1"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // Ensure a compatible NDK version for plugins that require newer NDK
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -27,10 +32,11 @@ android {
         applicationId = "com.example.flutter_application_1"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // cloud_firestore requires minSdk 23 or higher
+        minSdk = 23
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = flutterVersionCode ?: 1
+        versionName = flutterVersionName ?: "1.0.0"
     }
 
     buildTypes {
@@ -45,3 +51,4 @@ android {
 flutter {
     source = "../.."
 }
+
