@@ -1,8 +1,8 @@
-// lib/screens/add_questions_screen.dart
 import 'package:flutter/material.dart';
 import '../models/question.dart';
 import '../models/quiz.dart';
 import '../services/firebase_data_service.dart';
+import '../widgets/answer_Butttom.dart';
 
 class AddQuestionsScreen extends StatefulWidget {
   final Quiz quiz;
@@ -104,7 +104,7 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
             backgroundColor: mainGreen,
             elevation: 0,
             title: Text(
-              "Edit Questions (${questions.length})",
+              "ADD Questions (${questions.length})",
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -228,21 +228,24 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Text(
-                      "Correct Answer:",
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: mainGreen),
+                    Flexible(
+                      child: Text(
+                        "Correct Answer:",
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: mainGreen),
+                      ),
                     ),
                     const Spacer(),
-                    _AnswerButton(
+                    AnswerButton(
                       label: "TRUE",
                       isSelected: correctAnswer,
                       onTap: () => setState(() => correctAnswer = true),
                     ),
                     const SizedBox(width: 12),
-                    _AnswerButton(
+                    AnswerButton(
                       label: "FALSE",
                       isSelected: !correctAnswer,
                       onTap: () => setState(() => correctAnswer = false),
@@ -282,7 +285,7 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(24),
+                          padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                             color: mainGreen.withOpacity(0.1),
                             shape: BoxShape.circle,
@@ -294,7 +297,7 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                         const Text(
                           "No questions yet",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: mainGreen,
                           ),
@@ -405,50 +408,6 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                   ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _AnswerButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _AnswerButton({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0D4726) : Colors.grey[300],
-          borderRadius: BorderRadius.circular(25),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF0D4726).withOpacity(0.3),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
-          ),
-        ),
       ),
     );
   }
