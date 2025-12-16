@@ -307,7 +307,7 @@ class FirebaseDataService {
       await deleteQuiz(quiz.id);
     }
 
-    if (imagePath != null && imagePath.contains('firebase')) {
+    if (imagePath.isNotEmpty && imagePath.contains('firebase')) {
       try {
         await _storage.refFromURL(imagePath).delete();
       } catch (e) {
@@ -410,23 +410,23 @@ class FirebaseDataService {
   }
 
   Stream<List<Map<String, dynamic>>> monitorActiveStudents(String quizId) {
+    // Listen to the attempts subcollection written by the student app
     return _firestore
-        .collection('active_sessions')
+        .collection('quizzes')
         .doc(quizId)
+        .collection('attempts')
         .snapshots()
         .map((snapshot) {
-      if (!snapshot.exists) return [];
-
-      final data = snapshot.data() as Map<String, dynamic>;
-      final sessions = data['sessions'] as Map<String, dynamic>? ?? {};
-
-      return sessions.entries.map((entry) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
         return {
-          'studentId': entry.key,
-          'currentQuestionIndex': entry.value['currentQuestionIndex'],
-          'answers': entry.value['answers'],
-          'status': entry.value['status'],
-          'startedAt': entry.value['startedAt'], // Added startedAt
+          'studentId': doc.id,
+          'currentQuestionIndex': (data['currentQuestionIndex'] as int?) ?? -1,
+          'answers': data['answers'] as Map<String, dynamic>? ?? {},
+          'status': data['status'] as String? ?? 'in_progress',
+          'startedAt': data['startedAt'],
+          'finishedAt': data['finishedAt'],
+          'score': data['score'],
         };
       }).toList();
     });

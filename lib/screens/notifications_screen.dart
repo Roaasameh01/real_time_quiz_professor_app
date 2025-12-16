@@ -88,7 +88,7 @@ class NotificationsScreen extends StatelessWidget {
                 );
               }
 
-              final results = snapshot.data ?? [];
+          final results = snapshot.data ?? [];
 
               if (results.isEmpty) {
             return Center(
@@ -129,8 +129,8 @@ class NotificationsScreen extends StatelessWidget {
             );
           }
 
-              // Sort by date (newest first)
-              results.sort((a, b) => b.quiz.date.compareTo(a.quiz.date));
+              // Sort by completion date (newest first)
+              results.sort((a, b) => b.completedAt.compareTo(a.completedAt));
 
               return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -251,7 +251,7 @@ class NotificationsScreen extends StatelessWidget {
                             icon: Icons.calendar_today,
                             label: "Date",
                             value:
-                                DateFormat('MMM dd').format(result.quiz.date),
+                                DateFormat('MMM dd').format(result.completedAt),
                             color: Colors.blue,
                           ),
                           if (result.timeTakenSeconds != null) ...[
@@ -320,13 +320,20 @@ class NotificationsScreen extends StatelessWidget {
 
           final student = students.firstWhere(
             (s) => s.id == studentId,
-            orElse: () => Student(id: studentId, name: 'Unknown Student'),
+            orElse: () => Student(id: studentId, name: (resultData['studentName'] as String?) ?? 'Unknown Student'),
           );
 
           final correct = resultData['correctAnswers'] as int? ?? 0;
           final total = resultData['totalQuestions'] as int? ?? 1;
           final percentage = total > 0 ? ((correct / total) * 100).round() : 0;
           final timeTakenSeconds = resultData['timeTaken'] as int?;
+          DateTime completedAt = quiz.date;
+          final completedAtRaw = resultData['completedAt'];
+          if (completedAtRaw is String) {
+            try {
+              completedAt = DateTime.parse(completedAtRaw);
+            } catch (_) {}
+          }
 
           results.add(_QuizResult(
             student: student,
@@ -335,6 +342,7 @@ class NotificationsScreen extends StatelessWidget {
             total: total,
             percentage: percentage,
             timeTakenSeconds: timeTakenSeconds,
+            completedAt: completedAt,
           ));
         }
       } catch (e) {
@@ -373,6 +381,7 @@ class NotificationsScreen extends StatelessWidget {
               total: answeredCount,
               percentage: percentage,
               timeTakenSeconds: null,
+              completedAt: DateTime.now(),
             ));
           }
         }
@@ -404,6 +413,7 @@ class _QuizResult {
   final int total;
   final int percentage;
   final int? timeTakenSeconds; // Time taken in seconds
+  final DateTime completedAt;
 
   _QuizResult({
     required this.student,
@@ -412,6 +422,7 @@ class _QuizResult {
     required this.total,
     required this.percentage,
     this.timeTakenSeconds,
+    required this.completedAt,
   });
 }
 

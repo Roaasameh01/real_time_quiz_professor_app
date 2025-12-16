@@ -217,11 +217,11 @@ class StudentTrackingScreen extends StatelessWidget {
                     final status = session['status'] as String? ?? 'active';
 
                     // Convert answers map to questionIndex -> answer format
-                    final studentAnswers = <int, bool?>{};
+                    final studentAnswers = <int, int?>{};
                     answers.forEach((key, value) {
                       final qIndex = int.tryParse(key);
                       if (qIndex != null) {
-                        studentAnswers[qIndex] = value as bool?;
+                        studentAnswers[qIndex] = value as int?;
                       }
                     });
 
@@ -229,10 +229,12 @@ class StudentTrackingScreen extends StatelessWidget {
                     int correctCount = 0;
                     int answeredCount = 0;
                     for (int i = 0; i < questions.length; i++) {
-                      final answer = studentAnswers[i];
-                      if (answer != null) {
+                      final selectedIndex = studentAnswers[i];
+                      if (selectedIndex != null) {
                         answeredCount++;
-                        if (answer == questions[i].correctAnswer) {
+                        // Assume option 0 = True, option 1 = False
+                        final chosenIsTrue = selectedIndex == 0;
+                        if (chosenIsTrue == questions[i].correctAnswer) {
                           correctCount++;
                         }
                       }
@@ -316,11 +318,16 @@ class StudentTrackingScreen extends StatelessWidget {
                                       children: List.generate(
                                         questions.length,
                                         (qIndex) {
-                                          final answer = studentAnswers[qIndex];
+                                          final selectedIndex =
+                                              studentAnswers[qIndex];
                                           final question = questions[qIndex];
-                                          final isCorrect = answer != null &&
-                                              answer == question.correctAnswer;
-                                          final hasAnswered = answer != null;
+                                          final hasAnswered =
+                                              selectedIndex != null;
+                                          final chosenIsTrue =
+                                              selectedIndex == 0;
+                                          final isCorrect = hasAnswered &&
+                                              chosenIsTrue ==
+                                                  question.correctAnswer;
                                           final isCurrentQuestion =
                                               qIndex == currentQuestionIndex;
 

@@ -273,9 +273,9 @@ class CourseDetailsScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: beigeLight,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 elevation: 0,
               ),

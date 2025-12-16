@@ -129,9 +129,9 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                         backgroundColor: Colors.white,
                         foregroundColor: mainGreen,
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                            horizontal: 13, vertical: 6),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(15),
                         ),
                         elevation: 2,
                       ),
@@ -233,7 +233,7 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                         "Correct Answer:",
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 10,
                             fontWeight: FontWeight.w600,
                             color: mainGreen),
                       ),
@@ -291,7 +291,7 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
                             shape: BoxShape.circle,
                           ),
                           child: Icon(Icons.quiz_outlined,
-                              size: 64, color: mainGreen.withOpacity(0.7)),
+                              size: 50, color: mainGreen.withOpacity(0.7)),
                         ),
                         const SizedBox(height: 20),
                         const Text(
